@@ -57,13 +57,6 @@ This project is an event registration system built with Next.js and PostgreSQL. 
 
 6. Open your browser and navigate to `http://localhost:3000`.
 
-## Usage
-
-- Visit the homepage to see a welcome message and links to the events and users pages.
-- Navigate to the events page to view a list of events.
-- Navigate to the users page to view a list of registered users.
-- Use the registration form to register for events.
-
 ## License
 
 This project is licensed under the MIT License.
