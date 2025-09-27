@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import EventList from "../../components/EventList";
-import NewEventForm from "../../components/NewEventForm";
 import { Event } from "../../types";
 
 const EventsPage = () => {
@@ -9,12 +8,16 @@ const EventsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const refreshEvents = async () => {
+    const res = await fetch("/api/events");
+    const data = await res.json();
+    setEvents(data);
+  };
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("/api/events");
-        const data = await response.json();
-        setEvents(data);
+        await refreshEvents();
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
@@ -37,8 +40,14 @@ const EventsPage = () => {
     <div>
       <Link href="/">Back to Home</Link>
       <h1>Events Management</h1>
+      <Link href="/events/new">
+        {" "}
+        <button>Add Event</button>
+      </Link>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {!loading && !error && <EventList events={events} />}
+      {!loading && !error && (
+        <EventList events={events} refreshEvents={refreshEvents} />
+      )}
     </div>
   );
 };
