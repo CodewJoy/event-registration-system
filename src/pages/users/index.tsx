@@ -5,72 +5,49 @@ import UserList from "../../components/UserList";
 
 const UsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const refreshUsers = async () => {
+    const res = await fetch("/api/users");
+    const data = await res.json();
+    setUsers(data);
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await fetch("/api/users");
-      const data = await response.json();
-      setUsers(data);
+      try {
+        await refreshUsers();
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("Something went wrong");
+        }
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUsers();
   }, []);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-
-    try {
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create user");
-      }
-
-      const newUser: User = await response.json();
-      setUsers([...users, newUser]);
-      setName("");
-      setEmail("");
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
       <Link href="/">Back to Home</Link>
-      <h1>Users</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setName(e.target.value)
-          }
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setEmail(e.target.value)
-          }
-          required
-        />
-        <button type="submit">Add User</button>
-      </form>
-
+      <h1>Users Management</h1>
+      <Link href="/users/new">
+        {" "}
+        <button>Add User</button>
+      </Link>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <UserList users={users} />
+      {!loading && !error && (
+        <UserList users={users} refreshUsers={refreshUsers} />
+      )}
     </div>
   );
 };

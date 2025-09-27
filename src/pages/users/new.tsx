@@ -1,23 +1,12 @@
-import { useEffect, useState, FormEvent, ChangeEvent } from "react";
+import { useState, FormEvent, ChangeEvent } from "react";
 import Link from "next/link";
-import { User } from "../types";
-import UserList from "../components/UserList";
+import { useRouter } from "next/router";
 
-const UsersPage = () => {
-  const [users, setUsers] = useState<User[]>([]);
+const NewUserPage = () => {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const response = await fetch("/api/users");
-      const data = await response.json();
-      setUsers(data);
-    };
-
-    fetchUsers();
-  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,11 +22,7 @@ const UsersPage = () => {
       if (!response.ok) {
         throw new Error("Failed to create user");
       }
-
-      const newUser: User = await response.json();
-      setUsers([...users, newUser]);
-      setName("");
-      setEmail("");
+      router.push("/users");
     } catch (err: any) {
       setError(err.message);
     }
@@ -46,7 +31,7 @@ const UsersPage = () => {
   return (
     <div>
       <Link href="/">Back to Home</Link>
-      <h1>Users</h1>
+      <h1>Add User</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -70,9 +55,8 @@ const UsersPage = () => {
       </form>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <UserList users={users} />
     </div>
   );
 };
 
-export default UsersPage;
+export default NewUserPage;

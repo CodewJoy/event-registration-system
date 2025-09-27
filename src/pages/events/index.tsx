@@ -7,13 +7,23 @@ import { Event } from "../../types";
 const EventsPage = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const response = await fetch("/api/events");
-      const data = await response.json();
-      setEvents(data);
-      setLoading(false);
+      try {
+        const response = await fetch("/api/events");
+        const data = await response.json();
+        setEvents(data);
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("Something went wrong");
+        }
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchEvents();
@@ -27,7 +37,8 @@ const EventsPage = () => {
     <div>
       <Link href="/">Back to Home</Link>
       <h1>Events Management</h1>
-      <EventList events={events} />
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {!loading && !error && <EventList events={events} />}
     </div>
   );
 };

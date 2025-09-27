@@ -17,7 +17,7 @@ const Home = () => {
             <Link href="/users">View Users</Link>
           </li>
           <li>
-            <Link href="/register">View Register</Link>
+            <Link href="/registrations">View Registrations</Link>
           </li>
         </ul>
       </nav>
