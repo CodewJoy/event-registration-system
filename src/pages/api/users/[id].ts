@@ -45,8 +45,9 @@ export default async function handler(
 
   if (req.method === "DELETE") {
     try {
-      await prisma.user.delete({
+      await prisma.user.update({
         where: { id: Number(id) },
+        data: { isDeleted: true },
       });
       return res.status(204).end(); // no content
     } catch (error: any) {

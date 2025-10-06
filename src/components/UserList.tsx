@@ -5,6 +5,9 @@ interface User {
   id: number;
   name: string;
   email: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface UserListProps {
@@ -37,6 +40,7 @@ const UserList: React.FC<UserListProps> = ({ users, refreshUsers }) => {
           <tr>
             <th>User Name</th>
             <th>User Email</th>
+            <th>isDeleted</th>
             <th></th>
             <th></th>
           </tr>
@@ -46,6 +50,7 @@ const UserList: React.FC<UserListProps> = ({ users, refreshUsers }) => {
             <tr key={u.id}>
               <td>{u.name}</td>
               <td>{u.email}</td>
+              <td>{u.isDeleted ? "Yes" : "No"}</td>
               <td>
                 {" "}
                 <Link href={`/users/edit/${u.id}`}>
